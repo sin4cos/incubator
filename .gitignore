@@ -1,0 +1,10 @@
+# Editors.
+*.sw*
+.vscode
+.DS_Store
+
+# Build directory.
+out/
+
+# Externals directory.
+third_party/externals

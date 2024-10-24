@@ -1,0 +1,7 @@
+config("glm_config") {
+  include_dirs = [ "../externals/glm" ]
+}
+
+source_set("glm") {
+  public_configs = [ ":glm_config" ]
+}

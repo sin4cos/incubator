@@ -1,0 +1,46 @@
+# Debug/release ---------------------------------------------------------------
+
+config("debug") {
+  defines = [
+    "_DEBUG",
+    "DYNAMIC_ANNOTATIONS_ENABLED=1",
+  ]
+}
+
+config("release") {
+  defines = [ "NDEBUG" ]
+}
+
+# Executable configs ----------------------------------------------------------
+
+# Shared library configs ------------------------------------------------------
+
+# C++ standard to use ---------------------------------------------------------
+
+config("c++11") {
+  cflags_cc = [ "-std=c++11" ]
+}
+
+config("c++14") {
+  cflags_cc = [ "-std=c++14" ]
+}
+
+
+# temp -=----------------------------------------------------------------------
+config("compiler_defaults") {
+  if (current_os == "linux") {
+    cflags = [
+      "-fPIC",
+      "-pthread",
+    ]
+  }
+}
+
+config("executable_ldconfig") {
+  if (!is_mac) {
+    ldflags = [
+      "-Wl,-rpath=\$ORIGIN/",
+      "-Wl,-rpath-link=",
+    ]
+  }
+}

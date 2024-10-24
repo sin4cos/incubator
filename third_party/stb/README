@@ -1,0 +1,7 @@
+Name: stb
+License: MIT
+License File: LICENSE
+Upstream Git: https://github.com/nothings/stb
+Description:
+
+stb single-file public domain libraries for C/C++.

@@ -1,0 +1,7 @@
+Name: OpenGL Mathematics (GLM)
+License: MIT
+License File: LICENSE
+Upstream Git: https://github.com/g-truc/glm
+Description:
+
+A header only C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specifications.

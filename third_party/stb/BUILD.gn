@@ -1,0 +1,7 @@
+config("stb_config") {
+  include_dirs = [ "../externals/stb" ]
+}
+
+source_set("stb") {
+  public_configs = [ ":stb_config" ]
+}

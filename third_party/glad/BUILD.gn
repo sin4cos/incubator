@@ -1,0 +1,8 @@
+config("glad_config") {
+  include_dirs = [ "../externals/glad/include" ]
+}
+
+source_set("glad") {
+  sources = [ "../externals/glad/src/glad.c" ]
+  public_configs = [ ":glad_config" ]
+}

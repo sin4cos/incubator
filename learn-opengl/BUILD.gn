@@ -1,0 +1,20 @@
+executable("opengl-shader") {
+  sources = [ "src/shader_example.cc" ]
+  deps = [
+    "//third_party/GSL",
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+  ]
+}
+
+executable("opengl-texture") {
+  sources = [ "src/texture_example.cc" ]
+  deps = [
+    "//third_party/GSL",
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
+  ]
+}

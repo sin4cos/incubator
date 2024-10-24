@@ -1,0 +1,8 @@
+config("GSL_config") {
+  include_dirs = [ "../externals/GSL/include" ]
+}
+
+source_set("GSL") {
+  configs += [ "//build/config:c++14" ]
+  public_configs = [ ":GSL_config" ]
+}
