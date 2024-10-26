@@ -1,20 +1,47 @@
+group("all") {
+  deps = [
+    ":opengl-shader",
+    ":opengl-texture",
+    ":transform_example",
+  ]
+}
+
+copy("learn-opengl-resources") {
+  sources = [
+    "misc/awesomeface.png",
+    "misc/container.jpg",
+  ]
+  outputs = [ "$root_out_dir/{{source_file_part}}" ]
+  deps = [ ":opengl-texture" ]
+}
+
 executable("opengl-shader") {
   sources = [ "src/shader_example.cc" ]
   deps = [
-    "//third_party/GSL",
     "//third_party/glad",
     "//third_party/glfw",
-    "//third_party/imgui:imgui_with_glfw_opengl3",
   ]
+  configs += [ "//build/config:c++11" ]
 }
 
 executable("opengl-texture") {
   sources = [ "src/texture_example.cc" ]
   deps = [
-    "//third_party/GSL",
     "//third_party/glad",
     "//third_party/glfw",
-    "//third_party/imgui:imgui_with_glfw_opengl3",
     "//third_party/stb",
   ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("transform_example") {
+  sources = [ "src/transform_example.cc" ]
+  deps = [
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/stb",
+    "//third_party/glm",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+  ]
+  configs += [ "//build/config:c++11" ]
 }

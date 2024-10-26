@@ -68,9 +68,9 @@ declare_args() {
 
 assert(!(is_debug && is_official_build), "Can't do official debug builds")
 
-# ==============================================================================
+# =============================================================================
 # TOOLCHAIN SETUP
-# ==============================================================================
+# =============================================================================
 #
 # Here we set the default toolchain, as well as the variable host_toolchain
 # which will identify the toolchain corresponding to the local system when
@@ -84,6 +84,10 @@ _default_toolchain = ""
 
 if (target_os == "win") {
   _default_toolchain = "//build/toolchain/win:gcc"
+} else if (target_os == "mac") {
+  assert(host_os == "mac" || host_os == "linux",
+         "Mac cross-compiles are unsupported.")
+  _default_toolchain = "//build/toolchain/mac:clang_$target_cpu"
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }
@@ -127,9 +131,15 @@ is_posix = !is_win && !is_fuchsia
 # sub-config of an existing one, most commonly the main "compiler" one.
 
 # Holds all configs used for running the compiler.
-default_compiler_configs = []
+default_compiler_configs = [
+  "//build/config/compiler:compiler",
+  "//build/config/compiler:no_rtti",
+  "//build/config/compiler:no_exceptions",
+]
 
 if (is_win) {
+  default_compiler_configs += []
+} else if (is_mac) {
   default_compiler_configs += []
 }
 
@@ -147,10 +157,13 @@ set_defaults("static_library") {
 set_defaults("source_set") {
   configs = default_compiler_configs
 }
+set_defaults("rust_library") {
+  configs = default_compiler_configs
+}
 
 # Executable defaults.
 default_executable_configs =
-    default_compiler_configs + [ "//build/config:compiler_defaults" ]
+    default_compiler_configs + [ "//build/config:executable_config" ]
 
 set_defaults("executable") {
   configs = default_executable_configs
@@ -159,8 +172,11 @@ set_defaults("executable") {
 # Shared library and loadable module defaults (also for components in component
 # mode).
 default_shared_library_configs =
-    default_compiler_configs + [ "//build/config:executable_ldconfig" ]
+    default_compiler_configs + [ "//build/config:shared_library_config" ]
 
 set_defaults("shared_library") {
+  configs = default_shared_library_configs
+}
+set_defaults("loadable_module") {
   configs = default_shared_library_configs
 }

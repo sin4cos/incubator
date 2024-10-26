@@ -1,0 +1,28 @@
+group("all") {
+  deps = [
+    ":chrono_practice",
+    ":fill_practice",
+    ":for_each_practice",
+    ":generate_practice",
+  ]
+}
+
+executable("chrono_practice") {
+  sources = [ "chrono_practice.cc" ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("for_each_practice") {
+  sources = [ "for_each_practice.cc" ]
+  configs += [ "//build/config:c++17" ]
+}
+
+executable("generate_practice") {
+  sources = [ "generate_practice.cc" ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("fill_practice") {
+  sources = [ "fill_practice.cc" ]
+  configs += [ "//build/config:c++11" ]
+}

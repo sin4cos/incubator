@@ -1,6 +1,6 @@
 group("all") {
   deps = [
-    "//learn-opengl:opengl-texture",
-    "//simple_build:hello",
+    "//learn-opengl:all",
+    "//stl_practice:all"
   ]
 }

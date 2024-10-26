@@ -1,0 +1,131 @@
+# compiler --------------------------------------------------------------------
+#
+# Base compiler configuration.
+#
+# See also "runtime_library" below for related stuff and a discussion about
+# where stuff should go. Put warning related stuff in the "warnings" config.
+
+config("compiler") {
+  asmflags = []
+  cflags = []
+  cflags_c = []
+  cflags_cc = []
+  cflags_objc = []
+  cflags_objcc = []
+  rustflags = []
+  ldflags = []
+  defines = []
+  configs = []
+  rustflags = []
+}
+
+# C++ standard to use ---------------------------------------------------------
+
+# config("c++11") {
+#   if (!is_win) {
+#     cflags_cc = [ "-std=c++11" ]
+#   }
+# }
+
+# config("c++14") {
+#   if (!is_win) {
+#     cflags_cc = [ "-std=c++14" ]
+#   } else if (is_clang) {
+#     cflags_cc = [ "/std:c++14" ]
+#   }
+# }
+
+# config("c++17") {
+#   if (!is_win) {
+#     if (is_clang) {
+#       cflags_cc = [ "-std=c++17" ]
+#     } else {
+#       cflags_cc = [ "-std=c++1z" ]
+#     }
+#   } else if (is_clang) {
+#     cflags_cc = [ "/std:c++17" ]
+#   } else if (!is_clang) {
+#     # Fall back to c++latest if c++17 isn't available
+#     cflags_cc = [ "/std:c++latest" ]
+#   }
+# }
+
+# config("c++20") {
+#   if (!is_win) {
+#     if (is_clang) {
+#       cflags_cc = [ "-std=c++20" ]
+#     } else {
+#       cflags_cc = [ "-std=c++2a" ]
+#     }
+#   } else if (is_clang) {
+#     cflags_cc = [ "/std:c++20" ]
+#   } else if (!is_clang) {
+#     # No /std:c++20 yet
+#     cflags_cc = [ "/std:c++latest" ]
+#   }
+# }
+
+# config("c++latest") {
+#   if (!is_win) {
+#     cflags_cc = [ "-std=c++1z" ]
+#   } else if (is_clang || msc_full_ver >= 190024210) {
+#     cflags_cc = [ "/std:c++latest" ]
+#   }
+# }
+
+# exceptions ------------------------------------------------------------------
+#
+# Allows turning Exceptions on or off.
+# Note: exceptions are disallowed in Google code.
+
+config("exceptions") {
+  if (is_win) {
+    # Enables exceptions in the STL.
+    if (!use_custom_libcxx) {
+      defines = [ "_HAS_EXCEPTIONS=1" ]
+    }
+    cflags_cc = [ "/EHsc" ]
+  } else {
+    cflags_cc = [ "-fexceptions" ]
+    cflags_objcc = cflags_cc
+  }
+}
+
+config("no_exceptions") {
+  if (is_win) {
+    # Disables exceptions in the STL.
+    # libc++ uses the __has_feature macro to control whether to use exceptions,
+    # so defining this macro is unnecessary. Defining _HAS_EXCEPTIONS to 0 also
+    # breaks libc++ because it depends on MSVC headers that only provide certain
+    # declarations if _HAS_EXCEPTIONS is 1. Those MSVC headers do not use
+    # exceptions, despite being conditional on _HAS_EXCEPTIONS.
+    if (!use_custom_libcxx) {
+      defines = [ "_HAS_EXCEPTIONS=0" ]
+    }
+  } else {
+    cflags_cc = [ "-fno-exceptions" ]
+    cflags_objcc = cflags_cc
+  }
+}
+
+# rtti ------------------------------------------------------------------------
+#
+# Allows turning Run-Time Type Identification on or off.
+
+config("rtti") {
+  if (is_win) {
+    cflags_cc = [ "/GR" ]
+  } else {
+    cflags_cc = [ "-frtti" ]
+  }
+}
+
+config("no_rtti") {
+  # Some sanitizer configs may require RTTI to be left enabled globally
+  if (is_win) {
+    cflags_cc = [ "/GR-" ]
+  } else {
+    cflags_cc = [ "-fno-rtti" ]
+    cflags_objcc = cflags_cc
+  }
+}

@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
+static void glfw_error_callback(int error, const char* description);
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 static float vertices[] = {
@@ -45,10 +46,18 @@ static const char *fragment_shader_source = R"(
 
 int main(void)
 {
+    glfwSetErrorCallback(glfw_error_callback);
     glfwInit();
+
+    // Decide GL+GLSL versions
+#if defined(__APPLE__)
+    // GL 3.3 + GLSL 150
+    const char* glsl_version = "#version 150";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);                          // Required on Mac
+#endif
 
     // create GLFW window
     GLFWwindow *window = glfwCreateWindow(640, 480, "improfiler", nullptr, nullptr);
@@ -158,6 +167,10 @@ int main(void)
     glfwTerminate();
 
     return 0;
+}
+
+static void glfw_error_callback(int error, const char* description) {
+    printf("GLFW Error %d:%s\n", error, description);
 }
 
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height)

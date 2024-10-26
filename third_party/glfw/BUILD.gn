@@ -1,3 +1,10 @@
+declare_args() {
+  GLFW_BUILD_WIN32 = is_win
+  GLFW_BUILD_COCOA = is_mac
+  GLFW_BUILD_X11 = is_linux
+  GLFW_BUILD_WAYLAND = false
+}
+
 config("glfw_config") {
   include_dirs = [
     "../externals/glfw/include",
@@ -7,77 +14,120 @@ config("glfw_config") {
 
 static_library("glfw") {
   sources = [
-    #"../externals/glfw/deps/glad_vulkan.c",
-    "../externals/glfw/deps/getopt.c",
     "../externals/glfw/src/context.c",
     "../externals/glfw/src/egl_context.c",
     "../externals/glfw/src/init.c",
     "../externals/glfw/src/input.c",
+    "../externals/glfw/src/internal.h",
+    "../externals/glfw/src/mappings.h",
     "../externals/glfw/src/monitor.c",
     "../externals/glfw/src/null_init.c",
     "../externals/glfw/src/null_joystick.c",
+    "../externals/glfw/src/null_joystick.h",
     "../externals/glfw/src/null_monitor.c",
+    "../externals/glfw/src/null_platform.h",
     "../externals/glfw/src/null_window.c",
     "../externals/glfw/src/osmesa_context.c",
     "../externals/glfw/src/platform.c",
+    "../externals/glfw/src/platform.h",
     "../externals/glfw/src/vulkan.c",
     "../externals/glfw/src/window.c",
   ]
 
+  if (is_apple) {
+    sources += [
+      "../externals/glfw/src/cocoa_time.c",
+      "../externals/glfw/src/cocoa_time.h",
+      "../externals/glfw/src/posix_module.c",
+      "../externals/glfw/src/posix_thread.c",
+      "../externals/glfw/src/posix_thread.h",
+    ]
+  } else if (is_win) {
+    sources += [
+      "../externals/glfw/src/win32_module.c",
+      "../externals/glfw/src/win32_thread.c",
+      "../externals/glfw/src/win32_thread.h",
+      "../externals/glfw/src/win32_time.c",
+      "../externals/glfw/src/win32_time.h",
+    ]
+  } else if (is_linux) {
+    sources += [
+      "../externals/glfw/src/posix_module.c",
+      "../externals/glfw/src/posix_thread.c",
+      "../externals/glfw/src/posix_thread.h",
+      "../externals/glfw/src/posix_time.c",
+      "../externals/glfw/src/posix_time.h",
+    ]
+  }
+
   defines = []
-  if (is_mac) {
-    defines += [
-      "_GLFW_COCOA",
-      "__GLFW_USE_PETINA",
+  if (GLFW_BUILD_COCOA) {
+    defines += [ "_GLFW_COCOA" ]
+    sources += [
+      "../externals/glfw/src/cocoa_init.m",
+      "../externals/glfw/src/cocoa_joystick.m",
+      "../externals/glfw/src/cocoa_monitor.m",
+      "../externals/glfw/src/cocoa_window.m",
+      "../externals/glfw/src/nsgl_context.m",
     ]
     frameworks = [
       "Cocoa.framework",
       "IOKit.framework",
       "CoreFoundation.framework",
-      "CoreGraphics.framework",
-      "CoreVideo.framework",
-      "OpenGL.framework",
+      "QuartzCore.framework",
     ]
-    sources += [
-      "../externals/glfw/src/cocoa_init.m",
-      "../externals/glfw/src/cocoa_joystick.m",
-      "../externals/glfw/src/cocoa_monitor.m",
-      "../externals/glfw/src/cocoa_time.c",
-      "../externals/glfw/src/cocoa_window.m",
-      "../externals/glfw/src/nsgl_context.m",
-      "../externals/glfw/src/posix_thread.c",
+  }
+
+  if (GLFW_BUILD_WIN32) {
+    defines += [
+      "_GLFW_WIN32",
+      "_UNICODE",
     ]
-  } else if (is_linux) {
-    defines += [ "_GLFW_X11" ]
-    sources += [
-      "../externals/glfw/src/glx_context.c",
-      "../externals/glfw/src/linux_joystick.c",
-      "../externals/glfw/src/posix_thread.c",
-      "../externals/glfw/src/posix_time.c",
-      "../externals/glfw/src/x11_init.c",
-      "../externals/glfw/src/x11_monitor.c",
-      "../externals/glfw/src/x11_window.c",
-      "../externals/glfw/src/xkb_unicode.c",
-    ]
-    libs = [
-      "X11",
-      "Xinerama",
-      "Xcursor",
-      "Xrandr",
-    ]
-  } else if (is_win) {
-    defines += [ "_GLFW_WIN32" ]
     sources += [
       "../externals/glfw/src/wgl_context.c",
       "../externals/glfw/src/win32_init.c",
       "../externals/glfw/src/win32_joystick.c",
-      "../externals/glfw/src/win32_module.c",
+      "../externals/glfw/src/win32_joystick.h",
       "../externals/glfw/src/win32_monitor.c",
-      "../externals/glfw/src/win32_thread.c",
-      "../externals/glfw/src/win32_time.c",
+      "../externals/glfw/src/win32_platform.h",
       "../externals/glfw/src/win32_window.c",
     ]
     libs = [ "gdi32" ]
+  }
+
+  if (GLFW_BUILD_X11 || GLFW_BUILD_WAYLAND) {
+    if (is_linux) {
+      sources += [
+        "../externals/glfw/src/linux_joystick.c",
+        "../externals/glfw/src/linux_joystick.h",
+      ]
+    }
+    sources += [
+      "../externals/glfw/src/posix_poll.c",
+      "../externals/glfw/src/posix_poll.h",
+    ]
+
+    if (GLFW_BUILD_X11) {
+      defines += [ "_GLFW_X11" ]
+      sources += [
+        "../externals/glfw/src/glx_context.c",
+        "../externals/glfw/src/x11_init.c",
+        "../externals/glfw/src/x11_monitor.c",
+        "../externals/glfw/src/x11_platform.h",
+        "../externals/glfw/src/x11_window.c",
+        "../externals/glfw/src/xkb_unicode.c",
+        "../externals/glfw/src/xkb_unicode.h",
+      ]
+      libs = [
+        "X11",
+        "Xrandr",
+        "Xinerama",
+        "Xkb",
+        "Xcursor",
+        "Xi",
+        "Xshape",
+      ]
+    }
   }
 
   public_configs = [ ":glfw_config" ]
