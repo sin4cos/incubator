@@ -74,7 +74,9 @@ toolchain("gcc") {
   }
 
   tool("copy") {
-    command = "cp -af {{source}} {{output}}"
+    _tool_wrapper_path =
+      rebase_path("//build/toolchain/win/recursive_mirror.py", root_build_dir)
+    command = "\"$python_path\" $_tool_wrapper_path {{source}} {{output}}"
     description = "COPY {{source}} {{output}}"
   }
 }

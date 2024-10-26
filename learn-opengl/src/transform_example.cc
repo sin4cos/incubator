@@ -18,8 +18,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
 #define WINDOW_TITLE "transform example"
 
 static void glfw_error_callback(int error_code, const char *description);
@@ -82,12 +82,12 @@ int main(void)
     glfwInit();
     
     // Decide GL+GLSL versions
-#if defined(__APPLE__)
     // GL 3.3 + GLSL 150
     const char* glsl_version = "#version 150";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#if defined(__APPLE__)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);                          // Required on Mac
 #endif
 
@@ -291,7 +291,7 @@ int main(void)
                 polygon_mode = GL_POINT;
             ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
 
-            printf("radians:%.2f, scale:%.2f, translate:%.2f/%.2f/%2.f, item_current:%d\n", radians, scale, translate_x, translate_y, translate_z, item_current);
+            // printf("radians:%.2f, scale:%.2f, translate:%.2f/%.2f/%2.f, item_current:%d\n", radians, scale, translate_x, translate_y, translate_z, item_current);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();

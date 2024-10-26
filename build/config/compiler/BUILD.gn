@@ -79,33 +79,13 @@ config("compiler") {
 # Note: exceptions are disallowed in Google code.
 
 config("exceptions") {
-  if (is_win) {
-    # Enables exceptions in the STL.
-    if (!use_custom_libcxx) {
-      defines = [ "_HAS_EXCEPTIONS=1" ]
-    }
-    cflags_cc = [ "/EHsc" ]
-  } else {
-    cflags_cc = [ "-fexceptions" ]
-    cflags_objcc = cflags_cc
-  }
+  cflags_cc = [ "-fexceptions" ]
+  cflags_objcc = cflags_cc
 }
 
 config("no_exceptions") {
-  if (is_win) {
-    # Disables exceptions in the STL.
-    # libc++ uses the __has_feature macro to control whether to use exceptions,
-    # so defining this macro is unnecessary. Defining _HAS_EXCEPTIONS to 0 also
-    # breaks libc++ because it depends on MSVC headers that only provide certain
-    # declarations if _HAS_EXCEPTIONS is 1. Those MSVC headers do not use
-    # exceptions, despite being conditional on _HAS_EXCEPTIONS.
-    if (!use_custom_libcxx) {
-      defines = [ "_HAS_EXCEPTIONS=0" ]
-    }
-  } else {
-    cflags_cc = [ "-fno-exceptions" ]
-    cflags_objcc = cflags_cc
-  }
+  cflags_cc = [ "-fno-exceptions" ]
+  cflags_objcc = cflags_cc
 }
 
 # rtti ------------------------------------------------------------------------
@@ -113,19 +93,10 @@ config("no_exceptions") {
 # Allows turning Run-Time Type Identification on or off.
 
 config("rtti") {
-  if (is_win) {
-    cflags_cc = [ "/GR" ]
-  } else {
-    cflags_cc = [ "-frtti" ]
-  }
+  cflags_cc = [ "-frtti" ]
 }
 
 config("no_rtti") {
-  # Some sanitizer configs may require RTTI to be left enabled globally
-  if (is_win) {
-    cflags_cc = [ "/GR-" ]
-  } else {
-    cflags_cc = [ "-fno-rtti" ]
-    cflags_objcc = cflags_cc
-  }
+  cflags_cc = [ "-fno-rtti" ]
+  cflags_objcc = cflags_cc
 }
