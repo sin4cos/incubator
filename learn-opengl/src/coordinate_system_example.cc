@@ -20,7 +20,7 @@
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
-#define WINDOW_TITLE "transform example"
+#define WINDOW_TITLE "coordinate system example"
 
 static void glfw_error_callback(int error_code, const char *description);
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -117,7 +117,7 @@ int main(void)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;    // Enable Gamepad Controls
 
-    // Setup ImGui style
+    // 设置 ImGui 主题
     ImGui::StyleColorsDark();
 
     // Setup Platform/Render backends.
@@ -216,7 +216,9 @@ int main(void)
     // ========================================================================
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     GLenum polygon_mode = GL_FILL;
-    float radians = 0.0f, scale = 1.0f, translate_x = 0.0f, translate_y = 0.0f, translate_z = 0.0f;
+
+    float rotate_radians = -55.0f, perspective_radians = 45.0f;
+    ImVec4 translate = ImVec4(0.0f, 0.0f, -3.0f, 0.0f);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -237,17 +239,26 @@ int main(void)
         // ====================================================================
         glPolygonMode(GL_FRONT_AND_BACK, polygon_mode);
 
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        // glm::mat4 view = glm::mat4(1.0f);
-        // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        // glm::mat4 projection = glm::mat4(1.0f);
-        // projection = glm::perspective(glm::radians(45.0f), (float)display_w/(float)display_h, 0.1f, 100.0f);
-        // mvp = projection * view * model;
+        // GLM 创建正射投影矩阵
+        // 前两个参数指定了平截头体的左右坐标，第三和第四个参数指定了平截头体的底部和顶部。这四个参数定义了近平面和远平面的大小。
+        // 第五和第六个参数则定义了近平面和远平面的距离。
+        // glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 
-        mvp = glm::rotate(mvp, glm::radians(radians), glm::vec3(0.0, 0.0, 1.0));    // 旋转：glm::vec3(1.0f, 0.0f, 0.0f) 表示沿 x 轴旋转
-        mvp = glm::scale(mvp, glm::vec3(scale));                                    // 缩放：缩放指定倍数
-        mvp = glm::translate(mvp, glm::vec3(translate_x, translate_y, translate_z));// 位移：沿x、y、z轴位移
+        // GLM 创建透视投影矩阵
+        // 第一个参数定义了 fov 的值，它表示的是视野的角度。对于一个真实的观察效果，它的值经常设置为 45.0。
+        // 第二个参数设置了宽高比。
+        // 第三和第四个参数设置了平截头体的近平面和远平面。我们通常设置近平面距离为 0.1，远平面距离为 100.0。
+        // glm::mat4 proj = glm::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(rotate_radians), glm::vec3(1.0f, 0.0f, 0.0f));  // glm::vec3(1.0f, 0.0f, 0.0f) 表示沿 x 轴旋转
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(translate.x, translate.y, translate.z));
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(perspective_radians), (float)display_w/(float)display_h, 0.1f, 100.0f);
+        mvp = projection * view * model;
+        
 
         // ====================================================================
         // OpenGL 渲染逻辑
@@ -273,13 +284,13 @@ int main(void)
 
             ImGui::ColorEdit3("clear color", (float*)&clear_color);
             
-            ImGui::SliderFloat("rotate radian", &radians, -360.0f, 360.0f, "rotate = %.2f");
+            ImGui::SliderFloat("rotate radian", &rotate_radians, -360.0f, 360.0f, "rotate = %.2f");
 
-            ImGui::SliderFloat("scale", &scale, 0.0f, 2.0f, "scale = %.2f");
+            ImGui::SliderFloat("perspective radians", &perspective_radians, 0.0f, 90.0f, "rotate = %.2f");
 
-            ImGui::SliderFloat("x", &translate_x, -1.0f, 1.0f, "x = %.2f");
-            ImGui::SliderFloat("y", &translate_y, -1.0f, 1.0f, "y = %.2f");
-            ImGui::SliderFloat("z", &translate_z, -1.0f, 1.0f, "z = %.2f");
+            ImGui::SliderFloat("x", &translate.x, -1.0f, 1.0f, "x = %.2f");
+            ImGui::SliderFloat("y", &translate.y, -1.0f, 1.0f, "y = %.2f");
+            ImGui::SliderFloat("z", &translate.z, -1.0f, 1.0f, "z = %.2f");
 
             const char* items[] = { "FILL", "LINE", "POINT" };
             static int item_current = 0;
@@ -290,8 +301,6 @@ int main(void)
             else
                 polygon_mode = GL_POINT;
             ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
-
-            // printf("radians:%.2f, scale:%.2f, translate:%.2f/%.2f/%2.f, item_current:%d\n", radians, scale, translate_x, translate_y, translate_z, item_current);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();

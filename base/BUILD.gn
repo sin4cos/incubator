@@ -1,0 +1,9 @@
+config("mybase_config") {
+  include_dirs = [ "./" ]
+}
+
+static_library("mybase") {
+  sources = [ "file.cc" ]
+
+  configs += [ "//build/config:c++11" ]
+}

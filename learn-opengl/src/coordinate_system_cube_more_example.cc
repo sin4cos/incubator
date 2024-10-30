@@ -20,7 +20,7 @@
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
-#define WINDOW_TITLE "transform example"
+#define WINDOW_TITLE "coordinate system cube more example"
 
 static void glfw_error_callback(int error_code, const char *description);
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -32,17 +32,46 @@ struct Vertex {
     glm::vec2 tex;
 };
 
-static const Vertex vertices[4] = {
-    // 顶点坐标                 颜色                  纹理坐标
-    { { -0.5f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } },   // 左上
-    { {  0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },   // 右上
-    { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },   // 左下
-    { {  0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },   // 右下
+static const Vertex vertices[] = {
+    // 顶点坐标                  颜色                  纹理坐标
+    { { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } },   // 0: 前: 左上
+    { {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },   // 1: 前: 右上
+    { { -0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },   // 2: 前: 左下
+    { {  0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },   // 3: 前: 右下
+
+    { { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } },   // 4: 后: 左上
+    { {  0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },   // 5: 后: 右上
+    { { -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },   // 6: 后: 左下
+    { {  0.5f, -0.5f, -0.5f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },   // 7: 后: 右下
+
+    { { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } },   // 8: 左: 左上
+    { { -0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },   // 9: 左: 右上
+    { { -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },   // 10: 左: 左下
+    { { -0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },   // 11: 左: 右下
+
+    { {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } },   // 12: 右: 左上
+    { {  0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },   // 13: 右: 右上
+    { {  0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },   // 14: 右: 左下
+    { {  0.5f, -0.5f, -0.5f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },   // 15: 右: 右下
+
+    { { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } },   // 16: 上: 左上
+    { {  0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },   // 17: 上: 右上
+    { { -0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },   // 18: 上: 左下
+    { {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },   // 19: 上: 右下
+
+    { {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } },   // 20: 下: 左上
+    { { -0.5f, -0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },   // 21: 下: 右上
+    { {  0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },   // 22: 下: 左下
+    { { -0.5f, -0.5f,  0.5f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },   // 23: 下: 右下
 };
 
 static unsigned int indices[] = {
-    0, 1, 2,    // 第一个三角形
-    1, 2, 3,    // 第二个三角形
+    0, 1, 2, 1, 2, 3,           // 前面
+    4, 5, 6, 5, 6, 7,           // 后面
+    8, 9, 10, 9, 10, 11,        // 左面
+    12, 13, 14, 13, 14, 15,     // 右面
+    16, 17, 18, 17, 18, 19,     // 上面
+    20, 21, 22, 21, 22, 23,     // 下面
 };
 
 static const char *vertex_shader_source = R"(
@@ -117,7 +146,10 @@ int main(void)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;    // Enable Gamepad Controls
 
-    // Setup ImGui style
+    // 加载中文字体
+    io.Fonts->AddFontFromFileTTF("SourceHanSansCN-Medium.ttf", 12.0f, nullptr, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+
+    // 设置 ImGui 主题
     ImGui::StyleColorsDark();
 
     // Setup Platform/Render backends.
@@ -214,9 +246,27 @@ int main(void)
     // ========================================================================
     // 定义程序运行中的状态数据
     // ========================================================================
+    glEnable(GL_DEPTH_TEST);    // 开启 OpenGL 深度测试
+
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     GLenum polygon_mode = GL_FILL;
-    float radians = 0.0f, scale = 1.0f, translate_x = 0.0f, translate_y = 0.0f, translate_z = 0.0f;
+
+    float rotate_radians = -55.0f, perspective_radians = 45.0f;
+    ImVec4 translate = ImVec4(0.0f, 0.0f, -3.0f, 0.0f);
+    bool cube_random_rotate = true;
+
+    glm::vec3 cube_positions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f), 
+        glm::vec3( 2.0f,  5.0f, -15.0f), 
+        glm::vec3(-1.5f, -2.2f, -2.5f),  
+        glm::vec3(-3.8f, -2.0f, -12.3f),  
+        glm::vec3( 2.4f, -0.4f, -3.5f),  
+        glm::vec3(-1.7f,  3.0f, -7.5f),  
+        glm::vec3( 1.3f, -2.0f, -2.5f),  
+        glm::vec3( 1.5f,  2.0f, -2.5f), 
+        glm::vec3( 1.5f,  0.2f, -1.5f), 
+        glm::vec3(-1.3f,  1.0f, -1.5f)  
+    };
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -228,7 +278,7 @@ int main(void)
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 mvp(1.0f);
 
@@ -237,17 +287,25 @@ int main(void)
         // ====================================================================
         glPolygonMode(GL_FRONT_AND_BACK, polygon_mode);
 
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        // glm::mat4 view = glm::mat4(1.0f);
-        // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        // glm::mat4 projection = glm::mat4(1.0f);
-        // projection = glm::perspective(glm::radians(45.0f), (float)display_w/(float)display_h, 0.1f, 100.0f);
-        // mvp = projection * view * model;
+        // GLM 创建正射投影矩阵
+        // 前两个参数指定了平截头体的左右坐标，第三和第四个参数指定了平截头体的底部和顶部。这四个参数定义了近平面和远平面的大小。
+        // 第五和第六个参数则定义了近平面和远平面的距离。
+        // glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 
-        mvp = glm::rotate(mvp, glm::radians(radians), glm::vec3(0.0, 0.0, 1.0));    // 旋转：glm::vec3(1.0f, 0.0f, 0.0f) 表示沿 x 轴旋转
-        mvp = glm::scale(mvp, glm::vec3(scale));                                    // 缩放：缩放指定倍数
-        mvp = glm::translate(mvp, glm::vec3(translate_x, translate_y, translate_z));// 位移：沿x、y、z轴位移
+        // GLM 创建透视投影矩阵
+        // 第一个参数定义了 fov 的值，它表示的是视野的角度。对于一个真实的观察效果，它的值经常设置为 45.0。
+        // 第二个参数设置了宽高比。
+        // 第三和第四个参数设置了平截头体的近平面和远平面。我们通常设置近平面距离为 0.1，远平面距离为 100.0。
+        // glm::mat4 proj = glm::perspective(45.0f, (float)width/(float)height, 0.1f, 100.0f);
+
+        // glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::rotate(model, glm::radians(rotate_radians), glm::vec3(0.0f, 1.0f, 0.0f));  // glm::vec3(0.0f, 1.0f, 0.0f) 表示沿 y 轴旋转
+        // glm::mat4 view = glm::mat4(1.0f);
+        // view = glm::translate(view, glm::vec3(translate.x, translate.y, translate.z));
+        // glm::mat4 projection = glm::mat4(1.0f);
+        // projection = glm::perspective(glm::radians(perspective_radians), (float)display_w/(float)display_h, 0.1f, 100.0f);
+        // mvp = projection * view * model;
+        
 
         // ====================================================================
         // OpenGL 渲染逻辑
@@ -258,8 +316,26 @@ int main(void)
         glUseProgram(program);
         glBindVertexArray(VAO);
         glUniform1i(glGetUniformLocation(program, "textureContainer"), 0);  // 设置纹理单元0
-        glUniformMatrix4fv(glGetUniformLocation(program, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // 设置每个小立方体的 model、view、projection 矩阵
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(translate.x, translate.y, translate.z));
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(perspective_radians), (float)display_w/(float)display_h, 0.1f, 100.0f);
+        for (GLuint i = 0; i < 10; ++i) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cube_positions[i]);
+            GLfloat angle = 20.0f * (i + 1) * glfwGetTime();
+            if (cube_random_rotate)
+                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            else
+                model = glm::rotate(model, glm::radians(rotate_radians), glm::vec3(1.0f, 0.3f, 0.5f));
+            mvp = projection * view * model;
+
+            glUniformMatrix4fv(glGetUniformLocation(program, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
+        glBindVertexArray(0);
 
         // ====================================================================
         // ImGUI 渲染逻辑
@@ -272,14 +348,17 @@ int main(void)
             ImGui::Begin("Tools");
 
             ImGui::ColorEdit3("clear color", (float*)&clear_color);
+
+            ImGui::Checkbox("cube random rotate", &cube_random_rotate);
+
             
-            ImGui::SliderFloat("rotate radian", &radians, -360.0f, 360.0f, "rotate = %.2f");
+            ImGui::SliderFloat("rotate radian", &rotate_radians, -360.0f, 360.0f, "rotate = %.2f");
 
-            ImGui::SliderFloat("scale", &scale, 0.0f, 2.0f, "scale = %.2f");
+            ImGui::SliderFloat("perspective radians", &perspective_radians, 0.0f, 90.0f, "rotate = %.2f");
 
-            ImGui::SliderFloat("x", &translate_x, -1.0f, 1.0f, "x = %.2f");
-            ImGui::SliderFloat("y", &translate_y, -1.0f, 1.0f, "y = %.2f");
-            ImGui::SliderFloat("z", &translate_z, -1.0f, 1.0f, "z = %.2f");
+            ImGui::SliderFloat("x", &translate.x, -1.0f, 1.0f, "x = %.2f");
+            ImGui::SliderFloat("y", &translate.y, -1.0f, 1.0f, "y = %.2f");
+            ImGui::SliderFloat("z", &translate.z, -1.0f, 1.0f, "z = %.2f");
 
             const char* items[] = { "FILL", "LINE", "POINT" };
             static int item_current = 0;
@@ -290,8 +369,6 @@ int main(void)
             else
                 polygon_mode = GL_POINT;
             ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
-
-            // printf("radians:%.2f, scale:%.2f, translate:%.2f/%.2f/%2.f, item_current:%d\n", radians, scale, translate_x, translate_y, translate_z, item_current);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();

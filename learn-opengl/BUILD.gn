@@ -1,5 +1,11 @@
 group("all") {
   deps = [
+    ":camera_example",
+    ":camera_move_example",
+    ":coordinate_system_cube_example",
+    ":coordinate_system_cube_more_example",
+    ":coordinate_system_example",
+    ":light_colors_example",
     ":opengl-shader",
     ":opengl-texture",
     ":transform_example",
@@ -8,6 +14,7 @@ group("all") {
 
 copy("learn-opengl-resources") {
   sources = [
+    "misc/SourceHanSansCN-Medium.ttf",
     "misc/awesomeface.png",
     "misc/container.jpg",
   ]
@@ -39,9 +46,81 @@ executable("transform_example") {
   deps = [
     "//third_party/glad",
     "//third_party/glfw",
-    "//third_party/stb",
     "//third_party/glm",
     "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
+  ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("coordinate_system_example") {
+  sources = [ "src/coordinate_system_example.cc" ]
+  deps = [
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/glm",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
+  ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("coordinate_system_cube_example") {
+  sources = [ "src/coordinate_system_cube_example.cc" ]
+  deps = [
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/glm",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
+  ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("coordinate_system_cube_more_example") {
+  sources = [ "src/coordinate_system_cube_more_example.cc" ]
+  deps = [
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/glm",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
+  ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("camera_example") {
+  sources = [ "src/camera_example.cc" ]
+  deps = [
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/glm",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
+  ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("camera_move_example") {
+  sources = [ "src/camera_move_example.cc" ]
+  deps = [
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/glm",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
+  ]
+  configs += [ "//build/config:c++11" ]
+}
+
+executable("light_colors_example") {
+  sources = [ "src/light_colors_example.cc" ]
+  deps = [
+    "//third_party/glad",
+    "//third_party/glfw",
+    "//third_party/glm",
+    "//third_party/imgui:imgui_with_glfw_opengl3",
+    "//third_party/stb",
   ]
   configs += [ "//build/config:c++11" ]
 }
