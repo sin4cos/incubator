@@ -22,6 +22,20 @@ copy("learn-opengl-resources") {
   deps = [ ":opengl-texture" ]
 }
 
+config("opengl_utils_config") {
+  include_dirs = [ "src/utils" ]
+}
+
+static_library("opengl_utils") {
+  sources = [ "src/utils/opengl_program.cc" ]
+  deps = [
+    "//base:mybase",
+    "//third_party/glad",
+  ]
+  configs += [ "//build/config:c++11" ]
+  public_configs = [ ":opengl_utils_config" ]
+}
+
 executable("opengl-shader") {
   sources = [ "src/shader_example.cc" ]
   deps = [
@@ -116,6 +130,7 @@ executable("camera_move_example") {
 executable("light_colors_example") {
   sources = [ "src/light_colors_example.cc" ]
   deps = [
+    ":opengl_utils",
     "//third_party/glad",
     "//third_party/glfw",
     "//third_party/glm",

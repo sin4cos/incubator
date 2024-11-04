@@ -1,3 +1,5 @@
+#include <opengl_program.h>
+
 #include <chrono>
 #include <thread>
 
@@ -111,6 +113,7 @@ int main(void)
     // ========================================================================
     // GLFW 环境初始化
     // ========================================================================
+
     glfwSetErrorCallback(glfw_error_callback);
     glfwInit();
     
@@ -145,6 +148,7 @@ int main(void)
     // ========================================================================
     // 初始化 ImGUI，设置相关配置
     // ========================================================================
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -164,6 +168,7 @@ int main(void)
     // ========================================================================
     // OpenGL 数据准备
     // ========================================================================
+
     int success;
     char info_log[128];
 
@@ -251,6 +256,7 @@ int main(void)
     // ========================================================================
     // 定义程序运行中的状态数据
     // ========================================================================
+
     glEnable(GL_DEPTH_TEST);    // 开启 OpenGL 深度测试
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -259,12 +265,15 @@ int main(void)
     float rotate_radians = -55.0f, perspective_radians = 45.0f;
     ImVec4 translate = ImVec4(0.0f, 0.0f, -3.0f, 0.0f);
 
+    OpenGLProgram program_h;
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         
         // ====================================================================
         // 清屏
         // ====================================================================
+
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
@@ -276,6 +285,7 @@ int main(void)
         // ====================================================================
         // 更新设置项
         // ====================================================================
+
         glPolygonMode(GL_FRONT_AND_BACK, polygon_mode);
 
         // GLM 创建正射投影矩阵
@@ -324,6 +334,7 @@ int main(void)
         // ====================================================================
         // OpenGL 渲染逻辑
         // ====================================================================
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureContainer);
 
@@ -336,6 +347,7 @@ int main(void)
         // ====================================================================
         // ImGUI 渲染逻辑
         // ====================================================================
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -377,6 +389,7 @@ int main(void)
     // ========================================================================
     // 释放资源
     // ========================================================================
+    
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

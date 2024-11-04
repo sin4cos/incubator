@@ -6,4 +6,6 @@ static_library("mybase") {
   sources = [ "file.cc" ]
 
   configs += [ "//build/config:c++11" ]
+
+  public_configs = [ ":mybase_config" ]
 }
